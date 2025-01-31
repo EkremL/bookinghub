@@ -1,19 +1,33 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import logo from "@/assets/images/logo-white.png";
 import Image from "next/image";
 import profileDefault from "@/assets/images/profile.png";
 import Link from "next/link";
 import { FaGoogle } from "react-icons/fa";
 import { usePathname } from "next/navigation";
+import { signIn, signOut, useSession, getProviders } from "next-auth/react";
 
 const Navbar = () => {
   const [isMobileMenuOpened, setisMobileMenuOpened] = useState(false);
   const [isProfileMenuOpened, setIsProfileMenuOpened] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
   //!for active links, we are using usePathName
   const pathname = usePathname();
+  // const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  //! auth operations
+  const [providers, setProviders] = useState(null);
+  const { data: session } = useSession();
+  // console.log(session); next.config içerisinde buradaki linki ekledik image için! bunu yapmamızın sebebi, statik olarak bir image göstermek yerine googledeki resmimizi gösteriyoruz.
+  const profileImage = session?.user?.image;
+  useEffect(() => {
+    const setAuthProviders = async () => {
+      const res = await getProviders();
+      setProviders(res);
+    };
+    setAuthProviders();
+  }, []);
+
   return (
     <nav className="bg-blue-700 border-b border-blue-500">
       <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
@@ -75,7 +89,7 @@ const Navbar = () => {
                 >
                   Properties
                 </Link>
-                {isLoggedIn && (
+                {session && (
                   <Link
                     href="/properties/add"
                     className={`${
@@ -90,19 +104,29 @@ const Navbar = () => {
           </div>
 
           {/* <!-- Right Side Menu (Logged Out) --> */}
-          {!isLoggedIn && (
-            <div className="hidden md:block md:ml-6">
+          {!session && (
+            <div
+              className="hidden md:block md:ml-6
+            "
+            >
               <div className="flex items-center">
-                <button className="flex items-center text-white bg-gray-700 hover:bg-gray-900 hover:text-white rounded-md px-3 py-2">
-                  <FaGoogle className="text-white mr-2" />
-                  <span>Login or Register</span>
-                </button>
+                {providers &&
+                  Object.values(providers).map((provider, index) => (
+                    <button
+                      key={index}
+                      onClick={() => signIn(provider.id)}
+                      className="flex items-center text-white bg-gray-700 hover:bg-gray-900 hover:text-white rounded-md px-3 py-2"
+                    >
+                      <FaGoogle className="text-white mr-2" />
+                      <span>Login or Register</span>
+                    </button>
+                  ))}
               </div>
             </div>
           )}
 
           {/* <!-- Right Side Menu (Logged In) --> */}
-          {isLoggedIn && (
+          {session && (
             <div className="absolute inset-y-0 right-0 flex items-center pr-2 md:static md:inset-auto md:ml-6 md:pr-0">
               <Link href="/messages" className="relative group">
                 <button
@@ -146,8 +170,10 @@ const Navbar = () => {
                     <span className="sr-only">Open user menu</span>
                     <Image
                       className="h-8 w-8 rounded-full"
-                      src={profileDefault}
+                      src={profileImage || profileDefault}
                       alt="image"
+                      width={40}
+                      height={40}
                     />
                   </button>
                 </div>
@@ -168,6 +194,7 @@ const Navbar = () => {
                       role="menuitem"
                       tabIndex="-1"
                       id="user-menu-item-0"
+                      onClick={() => setIsProfileMenuOpened(false)}
                     >
                       Your Profile
                     </Link>
@@ -177,10 +204,15 @@ const Navbar = () => {
                       role="menuitem"
                       tabIndex="-1"
                       id="user-menu-item-2"
+                      onClick={() => setIsProfileMenuOpened(false)}
                     >
                       Saved Properties
                     </Link>
                     <button
+                      onClick={() => {
+                        setIsProfileMenuOpened(false);
+                        signOut();
+                      }}
                       className="block px-4 py-2 text-sm text-gray-700"
                       role="menuitem"
                       tabIndex="-1"
@@ -205,6 +237,7 @@ const Navbar = () => {
               className={`${
                 pathname === "/" ? "bg-black" : ""
               } text-white block rounded-md px-3 py-2 text-base font-medium`}
+              onClick={() => setisMobileMenuOpened(false)}
             >
               Home
             </Link>
@@ -213,20 +246,22 @@ const Navbar = () => {
               className={`${
                 pathname === "/properties" ? "bg-black" : ""
               } text-white block rounded-md px-3 py-2 text-base font-medium`}
+              onClick={() => setisMobileMenuOpened(false)}
             >
               Properties
             </Link>
-            {isLoggedIn && (
+            {session && (
               <Link
                 href="/properties/add"
                 className={`${
                   pathname === "/properties/add" ? "bg-black" : ""
                 } text-white block rounded-md px-3 py-2 text-base font-medium`}
+                onClick={() => setisMobileMenuOpened(false)}
               >
                 Add Property
               </Link>
             )}
-            {!isLoggedIn && (
+            {!session && (
               <button className="flex items-center text-white bg-gray-700 hover:bg-gray-900 hover:text-white rounded-md px-3 py-2 my-5">
                 <i className="fa-brands fa-google mr-2"></i>
                 <span>Login or Register</span>

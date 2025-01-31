@@ -19,11 +19,19 @@ const PropertySchema = new Schema(
       type: String,
       required: true,
     },
-    description: {
-      street: String,
-      city: String,
-      state: String,
-      zipcode: String,
+    location: {
+      street: {
+        type: String,
+      },
+      city: {
+        type: String,
+      },
+      state: {
+        type: String,
+      },
+      zipcode: {
+        type: String,
+      },
     },
     beds: {
       type: Number,
