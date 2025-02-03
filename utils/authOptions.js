@@ -53,22 +53,6 @@ export const authOptions = {
         console.error("Sign-in error:", error);
         return `/api/auth/error?error=${encodeURIComponent(error.message)}`;
       }
-
-      //   //2. Check if the user exists in the database
-      //   const userExists = await User.findOne({ email: profile.email });
-      //   //3. If the user does not exist, create a new user in the database
-      //   if (!userExists) {
-      //     //Truncate Username if too long
-      //     const username =
-      //       profile.name.length > 20 ? profile.name.slice(0, 20) : profile.name;
-
-      //     await User.create({
-      //       email: profile.email,
-      //       username,
-      //       image: profile.picture,
-      //     });
-      //   }
-      //   //4. Return true to allow sign in
     },
     //!Session Callback function that modifies the session object
     async session({ session }) {

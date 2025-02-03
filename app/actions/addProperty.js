@@ -6,6 +6,7 @@ import { getSessionUser } from "@/utils/getSessionUser";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import cloudinary from "@/config/cloudinary";
+
 async function addProperty(formData) {
   await connectDB();
 
@@ -78,7 +79,7 @@ async function addProperty(formData) {
   await newProperty.save();
 
   revalidatePath("/", "layout"); //önbelleği temizler ve sayfayı günceller. "layout" parametresi, ilgili layout seviyesinde revalidate işlemini uygulamak için kullanılır.
-  redirect(`/properties/${newProperty._id}`);
+  redirect(`/properties/${newProperty._id}?success=true`); //toast notification için status parametresi ekledik ani success=true
 }
 
 export default addProperty;
