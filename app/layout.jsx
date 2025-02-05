@@ -2,8 +2,10 @@ import "@/assets/styles/globals.css";
 import AuthProvider from "@/components/AuthProvider";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
+import { GlobalProvider } from "@/context/GlobalContext";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import "photoswipe/dist/photoswipe.css";
 
 export const metadata = {
   title: "Booking Hub",
@@ -14,14 +16,16 @@ export const metadata = {
 const MainLayout = ({ children }) => {
   return (
     <AuthProvider>
-      <html lang="en">
-        <body>
-          <Navbar />
-          <ToastContainer />
-          <main>{children}</main>
-          <Footer />
-        </body>
-      </html>
+      <GlobalProvider>
+        <html lang="en">
+          <body>
+            <Navbar />
+            <ToastContainer />
+            <main>{children}</main>
+            <Footer />
+          </body>
+        </html>
+      </GlobalProvider>
     </AuthProvider>
   );
 };
